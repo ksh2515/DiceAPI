@@ -9,6 +9,7 @@ Controller package: Contains 2 classes
 2) WeatherService.java: which is service which holds the business logic
 
 Security package: contains security config class
+
 Used the latest Spring Boot 3.0 secuirty features to implement the basic Authorization Mechanism
 
 for accessing the APIs
