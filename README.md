@@ -13,7 +13,9 @@ Security package: contains security config class
 Used the latest Spring Boot 3.0 secuirty features to implement the basic Authorization Mechanism
 
 for accessing the APIs
+
 Username: dice
+
 Password: dice123
 
 Sample Requests:
