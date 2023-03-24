@@ -20,14 +20,16 @@ Sample Requests:
 
 1) API 1: Get the Weather forecast summary of Any city using API (RapidApiGetForecastSummaryByLocationName)
 
+    Request: GET localhost:8080/forecastsummarys/{cityName}
+   
+    Ex: GET localhost:8080/forecastsummarys/Berlin
+ 
+   
+2) API 2: Get hourly Weather forecast details of Any city using API (RapidApiGetHourlyForecastByLocationName)
+
    Request: GET localhost:8080/forecasthourlys/{cityName}
    
    Ex: GET localhost:8080/forecasthourlys/Berlin
-2) API 2: Get hourly Weather forecast details of Any city using API (RapidApiGetHourlyForecastByLocationName)
-
-   Request: GET localhost:8080/forecastsummarys/{cityName}
-   
-   Ex: GET localhost:8080/forecastsummarys/Berlin
 
 The APIs are working.Let me know if you face any issues:
 
