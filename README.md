@@ -1,7 +1,7 @@
 # DiceAPI
 Spring Boot Dice API
 
-I have made 2 REST APIs using Spring Boot
+I have made 2 REST APIs which gives the Weather information of a particular location by its name using Spring Boot
 
 # Structure of Application
 Controller package: Contains 2 classes 
