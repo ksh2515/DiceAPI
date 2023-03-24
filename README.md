@@ -6,7 +6,7 @@ I have made 2 REST APIs using Spring Boot
 # Structure of Application
 Controller package: Contains 2 classes 
 1) WeatherController.java: which is a rest controller
-2) WeatherService.java: which is service which holds the business logic
+2) WeatherService.java: service class which holds the business logic
 
 Security package: contains security config class
 
