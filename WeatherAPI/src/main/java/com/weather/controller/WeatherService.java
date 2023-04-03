@@ -1,71 +1,112 @@
 package com.weather.controller;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import org.json.JSONObject;
-import org.springframework.stereotype.Service;
+import com.weather.entity.AuthRequest;
+import com.weather.service.CustomUserDetails;
+import com.weather.service.WeatherService;
+import com.weather.util.JwtUtil;
 
-@Service
-public class WeatherService {
+@RestController
+public class WeatherController {
 
-	private String cityName;
+	@Autowired
+	private JwtUtil jwtUtil;
 
-	public JSONObject getWeatherSummary() {
+	@Autowired
+	private AuthenticationManager authenticationManager;
 
-		HttpRequest request = HttpRequest.newBuilder()
-				.uri(URI.create("https://forecast9.p.rapidapi.com/rapidapi/forecast/" + getCity() + "/summary/"))
-				.header("X-RapidAPI-Key", "29a9ce2905mshe73447e1d974e66p133081jsn08a3e2ff2985")
-				.header("X-RapidAPI-Host", "forecast9.p.rapidapi.com")
-				.method("GET", HttpRequest.BodyPublishers.noBody()).build();
-		JSONObject json = null;
+	@Autowired
+	private WeatherService weatherService;
+
+
+	@PostMapping("/authenticate")
+	private String generateToken(@RequestBody AuthRequest authRequest){
+
 		try {
-			HttpResponse<String> response = HttpClient.newHttpClient().send(request,
-					HttpResponse.BodyHandlers.ofString());
-			System.out.println(response.body());
-			json = new JSONObject(response.body().toString());
-			return json;
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
+			authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword()));
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		return json;
+		return jwtUtil.generateToken(authRequest.getUserName());
 	}
 
-	public JSONObject getWeatherHourly() {
+	@GetMapping(value = "/tests", produces = MediaType.APPLICATION_JSON_VALUE)
+	private ResponseEntity<String> getTests() {
 
-		HttpRequest request = HttpRequest.newBuilder()
-				.uri(URI.create("https://forecast9.p.rapidapi.com/rapidapi/forecast/" + getCity() + "/hourly/"))
-				.header("X-RapidAPI-Key", "29a9ce2905mshe73447e1d974e66p133081jsn08a3e2ff2985")
-				.header("X-RapidAPI-Host", "forecast9.p.rapidapi.com")
-				.method("GET", HttpRequest.BodyPublishers.noBody()).build();
-		JSONObject json = null;
+		String json = null;
 		try {
-			HttpResponse<String> response = HttpClient.newHttpClient().send(request,
-					HttpResponse.BodyHandlers.ofString());
-			System.out.println(response.body());
-			json = new JSONObject(response.body().toString());
-			return json;
-		} catch (IOException e) {
+			json = "this is a test case";
+			return ResponseEntity.ok(json);
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			return ResponseEntity.internalServerError().build();
+		}
+	}
+
+	@GetMapping(value = "/forecastsummarys/{city}", produces = MediaType.APPLICATION_JSON_VALUE)
+	private ResponseEntity<String> getWeatherSummary(@PathVariable String city) {
+
+		if (city.isEmpty() || city.equals(null)) {
+			// throw new AttributeNotFoundException("city is Null");
+			return ResponseEntity.noContent().build();
+			// return ResponseEntity.notFound().build();
 		}
 
-		return json;
+		weatherService.setCity(city);
+		String json = null;
+		try {
+			json = new String(weatherService.getWeatherSummary().toString());
+			return ResponseEntity.ok(json);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError().build();
+		}
 	}
 
-	public void setCity(String city) {
-		this.cityName = city;
+	@GetMapping(value = "/forecasthourlys/{city}", produces = MediaType.APPLICATION_JSON_VALUE)
+	private ResponseEntity<String> getWeatherHourly(@PathVariable String city) {
+
+		if (city.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+
+		weatherService.setCity(city);
+		String json = null;
+		try {
+			json = new String(weatherService.getWeatherHourly().toString());
+			return ResponseEntity.ok(json);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError().build();
+		}
 	}
 
-	public String getCity() {
-		return cityName;
+	@GetMapping(value = "/version", produces = MediaType.APPLICATION_JSON_VALUE)
+	private ResponseEntity<String> getWeatherSummary() {
+
+		String json = null;
+		try {
+			json = new String(weatherService.getVersion().toString());
+			return ResponseEntity.ok(json);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.internalServerError().build();
+		}
 	}
 
 }
