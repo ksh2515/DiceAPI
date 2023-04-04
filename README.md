@@ -14,9 +14,9 @@ Used the latest Spring Boot 3.0 secuirty features to implement the basic Authori
 
 for accessing the APIs
 
-Username: dice
+Used JWT Authentication mechanism
 
-Password: dice123
+First Generate The token and then use that to authenticate other Requests
 
 Sample Requests:
 
